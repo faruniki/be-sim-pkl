@@ -22,3 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/login', [PenggunaController::class, 'login']);
 Route::post('/register', [PenggunaController::class, 'register']);
+Route::get('/csrf-cookie', function() {
+    return response()->json(['csrfToken' => csrf_token()]);
+});
