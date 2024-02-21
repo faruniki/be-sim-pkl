@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Gelombang;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
@@ -15,7 +16,8 @@ class PenggunaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    // login
+    public function indexLogin()
     {
         return redirect(login);
     }
@@ -88,70 +90,115 @@ class PenggunaController extends Controller
 
         return redirect('/');
     }
+    // endlogin
     /**
      * 
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    // jadwal create
+    public function jadwalcreate(Request $request)
     {
-        //
+        $validator = Gelombang::make($request->all(), [
+            'nis' => 'required',
+            'name' => 'required',
+            'email' => 'required|email',
+            'rombel' => 'required',
+            'rayon' => 'required',
+            'pt' => 'required',
+            'priode' => 'required',
+           
+        ]);
+        Gelombang::create([
+            'nis' => $request->nis,
+            'name' => $request->name,
+            'email' => $request->email,
+            'rombel' => $request->rombel,
+            'rayon' => $request->rayon,
+            'pt' => $request->pt,   
+            'priode' => $request->priode,
+        ]);
+
+        if ($request) {
+            return response()->json([
+                'student_data' => $validator,
+                'status' => 200,
+                'message' => 'create successfully',
+            ]);
+        }else {
+            return response()->json([
+                'student_data' => $validator,
+                'status' => 400,
+                'message' => 'create not found',
+            ]);
+        }
+
+        // return redirect()->route('/')->with('success', 'Berhasil menambahakan prestasi');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    // show semua data
+    public function index()
     {
-        //
+        $data = Gelombang::get();
+        return response()->json(['data' => $data], 200);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\pengguna  $pengguna
-     * @return \Illuminate\Http\Response
-     */
-    public function show(pengguna $pengguna)
+    // show sesuai id
+    public function jadwalshow($id)
     {
-        //
+        $data = Gelombang::find($id);
+
+    if (!$data) {
+        return response()->json(['message' => 'Data not found'], 400);
+    }
+    return response()->json(['data' => $data], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\pengguna  $pengguna
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(pengguna $pengguna)
+ 
+    public function jadwaldelete($id)
     {
-        //
+        $data = Gelombang::find($id);
+    if (!$data) {
+        return response()->json(['message' => 'Data not found'], 400);
+    }
+    $data->delete();
+    return response()->json(['message' => 'Data deleted successfully'], 200);
+        // return redirect()->route('');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\pengguna  $pengguna
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, pengguna $pengguna)
+    public function jadwalupdate(Request $request, $id)
     {
-        //
+        $validator = Gelombang::make($request->all(),[
+            'nis' => 'required',
+            'name' => 'required',
+            'email' => 'required|email',
+            'rombel' => 'required',
+            'rayon' => 'required',
+            'pt' => 'required',
+            'priode' => 'required',
+           
+        ]);
+
+        $data = Gelombang::find($id);
+
+
+        if (!$data) {
+            return response()->json(['message' => 'Data not found'], 400);
+        }
+        $data->update([
+            'nis' => $request->nis,
+            'name' => $request->name,
+            'email' => $request->email,
+            'rombel' => $request->rombel,
+            'rayon' => $request->rayon,
+            'pt' => $request->pt,
+            'priode' => $request->priode,
+        ]);
+        return response()->json(['message' => 'Data updated successfully'], 200);
+        // return redirect()->route('');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\pengguna  $pengguna
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(pengguna $pengguna)
-    {
-        //
-    }
+    // end jadwal pemberangkatan
+
 }
