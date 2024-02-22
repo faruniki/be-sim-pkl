@@ -5,10 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Gelombang;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ApiFormatter;
-
+use Illuminate\Support\Facades\Auth;
 class PenggunaController extends Controller
 {
     /**
@@ -24,12 +23,13 @@ class PenggunaController extends Controller
 
     public function login(Request $request)
     {
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password]))
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'role' => $request->role]))
         {
             $auth = Auth::user();
             $success['token'] = $auth->createToken('auth_token')->plainTextToken;
             $success['email'] = $auth->email;
             $success['password'] = $auth->password;
+            $success['role'] = $auth->role;
 
             return response()->json([
                 'status' => 200,
@@ -39,7 +39,7 @@ class PenggunaController extends Controller
             ]);
         }else{
             return response()->json([
-                'status' => 401,
+                'status' => 400,
                 'success' => false,
                 'message' => 'Invalid email or password',
                 'data' => null
@@ -88,7 +88,7 @@ class PenggunaController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/')->route();
     }
     // endlogin
     /**

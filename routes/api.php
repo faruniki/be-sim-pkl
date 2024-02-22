@@ -22,9 +22,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/login', [PenggunaController::class, 'login']);
+Route::post('/login', [penggunaController::class, 'login']);
 Route::post('/register', [PenggunaController::class, 'register']);
-<<<<<<< HEAD
+
 
 // jadwal pemberangkatan
 Route::post('/jadwal/create', [PenggunaController::class, 'jadwalcreate']);
@@ -46,8 +46,7 @@ Route::get('/permintaan', [PermintaanController::class, 'index']);
 Route::get('/permintaan/{id}', [PermintaanController::class, 'show']);
 Route::patch('permintaan/update/{id}', [PermintaanController::class, 'update']);
 Route::delete('/permintaan/delete/{id}', [PermintaanController::class, 'delete']);
-=======
+
 Route::get('/csrf-cookie', function() {
     return response()->json(['csrfToken' => csrf_token()]);
 });
->>>>>>> f6f337f67fe9999178c00ecaca042ebc22f90d7f
