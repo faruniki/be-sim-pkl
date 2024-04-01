@@ -23,13 +23,12 @@ class PenggunaController extends Controller
 
     public function login(Request $request)
     {
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'role' => $request->role]))
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password]))
         {
             $auth = Auth::user();
             $success['token'] = $auth->createToken('auth_token')->plainTextToken;
             $success['email'] = $auth->email;
             $success['password'] = $auth->password;
-            $success['role'] = $auth->role;
 
             return response()->json([
                 'status' => 200,
@@ -47,12 +46,42 @@ class PenggunaController extends Controller
         }
     }
 
+    public function Authenticate(Request $request)
+    {
+        $credentials = $request->validate([ 
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+
+        if(Auth::attempt($credentials)){
+            // check whether the user = admin
+            if(Auth::user()->role == 'admin')
+            {
+                return response()->json([
+                    'status' => 200,
+                    'success' => true,
+                    'message' => 'Login Successfully',
+                    'data' => $success
+                ]);
+            }
+            return response()->json([
+                'status' => 200,
+                'success' => false,
+                'message' => 'Invalid email or password',
+                'data' => null
+            ]);
+
+        }
+        return back()->with('warning','Silahkan Masukkan email dan password dengan benar');
+    }
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required',
+            'role' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -71,8 +100,9 @@ class PenggunaController extends Controller
 
         $success['token'] = $token;
         $success['name'] = $user->name;
+        $success['role'] = $user->role;
 
-        return response()->json([
+        return response()->json([ 
             'success' => true,
             'message' => 'Register successfully',
             'data' => $success
